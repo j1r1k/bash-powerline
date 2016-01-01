@@ -41,6 +41,11 @@ function git-info () {
   readonly GIT_NEED_PULL_SYMBOL='⇣'
 
   git-check
+
+  if [ "$(git rev-parse --is-bare-repository)" = "true" ]; then
+    printf "[bare]"
+    return
+  fi
  
   MARKS=""
   
