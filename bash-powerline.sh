@@ -33,6 +33,12 @@ function git-check () {
   [ -n "${BRANCH}" ] || exit
 }
 
+function git-annex-check () {
+  git config --get annex.uuid >/dev/null
+
+  return ${?}
+}
+
 function git-info () {
 
   readonly GIT_BRANCH_CHANGED_SYMBOL='±'
@@ -41,8 +47,13 @@ function git-info () {
 
   git-check
 
+  if git-annex-check; then
+    echo -n "«annex»"
+    return
+  fi
+
   if [ "$(git rev-parse --is-bare-repository)" = "true" ]; then
-    echo -n "bare"
+    echo -n "«bare»"
     return
   fi
 
