@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PS_DELIM=''
- 
+PS_DELIM='▌'
+
 function pwds () {
 
   LENGTH=25
@@ -35,7 +35,6 @@ function git-check () {
 
 function git-info () {
 
-  readonly GIT_BRANCH_SYMBOL=' '
   readonly GIT_BRANCH_CHANGED_SYMBOL='±'
   readonly GIT_NEED_PUSH_SYMBOL='⇡'
   readonly GIT_NEED_PULL_SYMBOL='⇣'
@@ -59,7 +58,7 @@ function git-info () {
   [ -n "${BEHINDN}" ] && MARKS+=" ${GIT_NEED_PULL_SYMBOL}${BEHINDN}"
 
   # print the git branch segment without a trailing newline
-  printf "${GIT_BRANCH_SYMBOL}${BRANCH}${MARKS}"
+  echo -n "${BRANCH}${MARKS}"
 
   unset MARKS AHEADN BEHINDN
 }
