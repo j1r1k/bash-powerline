@@ -1,11 +1,25 @@
 #!/bin/bash
 
 PS_DELIM='▌'
+PWDS_SYMBOL='…'
+
+GIT_BRANCH_CHANGED_SYMBOL='±'
+GIT_NEED_PUSH_SYMBOL='⇡'
+GIT_NEED_PULL_SYMBOL='⇣'
+
+# Colors
+HOST_USER_BG=190
+HOST_USER_FG=16
+HOST_ROOT_BG=202
+HOST_ROOT_FG=16
+DIR_BG=234
+DIR_FG=85
+GIT_BG=27
+GIT_FG=15
+PROMPT_ERR=1
 
 function pwds () {
-
   LENGTH=25
-  readonly PWDS_SYMBOL='…'
 
   PRE=""
   NAME="${1}"
@@ -15,17 +29,16 @@ function pwds () {
     PRE+='~' NAME="${NAME#${HOME}}" LENGTH=$((LENGTH-1))
   fi
   if ((${#NAME}>LENGTH))
-  then 
+  then
     NAME="/${PWDS_SYMBOL}${NAME:$((${#NAME}-LENGTH+1))}"
   fi
 
-  echo "${PRE}${NAME}" 
+  echo "${PRE}${NAME}"
 
   unset LENGTH PRE NAME
 }
 
 function git-check () {
-
   [ -x "$(which git)" ] || exit
 
   # get current branch name or short SHA1 hash for detached head
@@ -34,11 +47,6 @@ function git-check () {
 }
 
 function git-info () {
-
-  readonly GIT_BRANCH_CHANGED_SYMBOL='±'
-  readonly GIT_NEED_PUSH_SYMBOL='⇡'
-  readonly GIT_NEED_PULL_SYMBOL='⇣'
-
   git-check
 
   if [ "$(git rev-parse --is-bare-repository)" = "true" ]; then
@@ -63,30 +71,26 @@ function git-info () {
   unset MARKS AHEADN BEHINDN
 }
 
-FG_LRED='\[\e[91m\]'
-FG_GRN='\[\e[32m\]'
-FG_LBLU='\[\e[94m\]'
-FG_WHT='\[\e[97m\]'
+function fg() {
+  printf "\[\e[38;5;%sm\]" "$1"
+}
 
-BG_LRED='\[\e[101m\]'
-BG_GRN='\[\e[42m\]'
-BG_LBLU='\[\e[104m\]'
-BG_WHT='\[\e[107m\]'
+function bg() {
+  printf "\[\e[48;5;%sm\]" "$1"
+}
 
 RESET='\[\e[0m\]'
-#INVERT='\[\e[7m\]'
-#BOLD='\[\e[1m\]'
 
 PS1=""
 
 if [[ ${EUID} == 0 ]]
 then
-  PS1+="${BG_LRED}${FG_WHT}\h${BG_WHT}${FG_LRED}${PS_DELIM}"
+  PS1+="$(bg $HOST_ROOT_BG)$(fg $HOST_ROOT_FG)\h$(bg $DIR_BG)$(fg $HOST_ROOT_BG)${PS_DELIM}"
 else
-  PS1+="${BG_GRN}${FG_WHT}\h${BG_WHT}${FG_GRN}${PS_DELIM}"
+  PS1+="$(bg $HOST_USER_BG)$(fg $HOST_USER_FG)\h$(bg $DIR_BG)$(fg $HOST_USER_BG)${PS_DELIM}"
 fi
 
-PS1+="\$(RET=\$?; echo -n \"${BG_WHT}${FG_LBLU} \$(pwds \"\${PWD}\") ${RESET}\" ; if \$(git-check); then echo -n \"${FG_WHT}${BG_LBLU}${PS_DELIM}${FG_WHT}${BG_LBLU} \$(git-info) ${RESET}${FG_LBLU}${PS_DELIM}${RESET} \"; else echo -n \"${RESET}${FG_WHT}${PS_DELIM}${RESET} \"; fi; if [[ \${RET} == 0 ]]; then echo -n \"${FG_LBLU}\";else echo -n \"${FG_LRED}\"; fi)"
+PS1+="\$(RET=\$?; echo -n \"$(bg $DIR_BG)$(fg $DIR_FG) \$(pwds \"\${PWD}\") ${RESET}\" ; if \$(git-check); then echo -n \"$(bg $GIT_BG)$(fg $DIR_BG)${PS_DELIM}$(bg $GIT_BG)$(fg $GIT_FG) \$(git-info) ${RESET}$(fg $GIT_BG)${PS_DELIM}${RESET} \"; else echo -n \"${RESET}$(fg $DIR_BG)${PS_DELIM}${RESET} \"; fi; if [[ \${RET} != 0 ]]; then echo -n \"$(fg $PROMPT_ERR)\"; fi)"
 
 if [[ ${EUID} == 0 ]]
 then
@@ -97,7 +101,6 @@ fi
 
 PS1+="${RESET} "
 
-unset PS_DELIM 
-unset FG_LRED FG_GRN FG_LBLU FG_WHT FG_BWHT
-unset BG_LRED BG_GRN BG_LBLU BG_WHT
-unset RESET 
+unset PS_DELIM
+unset HOST_USER_BG HOST_USER_FG HOST_ROOT_BG HOST_ROOT_FG DIR_BG DIR_FG GIT_BG GIT_FG PROMPT_ERR
+unset RESET
