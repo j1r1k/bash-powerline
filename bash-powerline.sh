@@ -71,11 +71,11 @@ function git-info () {
   unset MARKS AHEADN BEHINDN
 }
 
-function fg() {
+function fg_color() {
   printf "\[\e[38;5;%sm\]" "$1"
 }
 
-function bg() {
+function bg_color() {
   printf "\[\e[48;5;%sm\]" "$1"
 }
 
@@ -85,12 +85,12 @@ PS1=""
 
 if [[ ${EUID} == 0 ]]
 then
-  PS1+="$(bg $HOST_ROOT_BG)$(fg $HOST_ROOT_FG)\h$(bg $DIR_BG)$(fg $HOST_ROOT_BG)${PS_DELIM}"
+  PS1+="$(bg_color $HOST_ROOT_BG)$(fg_color $HOST_ROOT_FG)\h$(bg_color $DIR_BG)$(fg_color $HOST_ROOT_BG)${PS_DELIM}"
 else
-  PS1+="$(bg $HOST_USER_BG)$(fg $HOST_USER_FG)\h$(bg $DIR_BG)$(fg $HOST_USER_BG)${PS_DELIM}"
+  PS1+="$(bg_color $HOST_USER_BG)$(fg_color $HOST_USER_FG)\h$(bg_color $DIR_BG)$(fg_color $HOST_USER_BG)${PS_DELIM}"
 fi
 
-PS1+="\$(RET=\$?; echo -n \"$(bg $DIR_BG)$(fg $DIR_FG) \$(pwds \"\${PWD}\") ${RESET}\" ; if \$(git-check); then echo -n \"$(bg $GIT_BG)$(fg $DIR_BG)${PS_DELIM}$(bg $GIT_BG)$(fg $GIT_FG) \$(git-info) ${RESET}$(fg $GIT_BG)${PS_DELIM}${RESET} \"; else echo -n \"${RESET}$(fg $DIR_BG)${PS_DELIM}${RESET} \"; fi; if [[ \${RET} != 0 ]]; then echo -n \"$(fg $PROMPT_ERR)\"; fi)"
+PS1+="\$(RET=\$?; echo -n \"$(bg_color $DIR_BG)$(fg_color $DIR_FG) \$(pwds \"\${PWD}\") ${RESET}\" ; if \$(git-check); then echo -n \"$(bg_color $GIT_BG)$(fg_color $DIR_BG)${PS_DELIM}$(bg_color $GIT_BG)$(fg_color $GIT_FG) \$(git-info) ${RESET}$(fg_color $GIT_BG)${PS_DELIM}${RESET} \"; else echo -n \"${RESET}$(fg_color $DIR_BG)${PS_DELIM}${RESET} \"; fi; if [[ \${RET} != 0 ]]; then echo -n \"$(fg_color $PROMPT_ERR)\"; fi)"
 
 if [[ ${EUID} == 0 ]]
 then
